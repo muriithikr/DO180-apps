@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Duka Shop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Duka<span>Shop</span></a>
+    <button id="cartButton" class="cart-button" aria-label="Open cart">
+      🛒 Cart <span id="cartCount" class="badge">0</span>
+    </button>
+  </header>
+
+  <div id="modeBanner" class="mode-banner" hidden></div>
+
+  <main>
+    <section class="hero">
+      <h1>Kenyan crafts &amp; goods</h1>
+      <p>Pay securely with <strong class="mpesa">M-PESA</strong> or cash on delivery.</p>
+    </section>
+    <section id="products" class="grid" aria-live="polite"></section>
+  </main>
+
+  <!-- Cart / checkout drawer -->
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-panel" role="dialog" aria-labelledby="drawerTitle">
+      <div class="drawer-head">
+        <h2 id="drawerTitle">Your cart</h2>
+        <button class="icon-btn" data-close aria-label="Close">✕</button>
+      </div>
+
+      <div id="cartView">
+        <ul id="cartItems" class="cart-items"></ul>
+        <p id="cartEmpty" class="muted">Your cart is empty.</p>
+        <div class="total-row"><span>Total</span><strong id="cartTotal">KES 0</strong></div>
+
+        <form id="checkoutForm" class="checkout" novalidate>
+          <h3>Checkout</h3>
+          <label>Full name
+            <input name="name" autocomplete="name" required>
+          </label>
+          <label>M-Pesa / phone number
+            <input name="phone" type="tel" inputmode="tel" placeholder="0712 345 678" autocomplete="tel" required>
+          </label>
+          <label>Delivery address
+            <textarea name="address" rows="2" placeholder="Estate, street, building"></textarea>
+          </label>
+
+          <fieldset class="methods">
+            <legend>Payment method</legend>
+            <label class="method">
+              <input type="radio" name="paymentMethod" value="mpesa" checked>
+              <span><strong class="mpesa">M-PESA</strong> — pay now via a prompt on your phone</span>
+            </label>
+            <label class="method">
+              <input type="radio" name="paymentMethod" value="cod">
+              <span><strong>Cash on delivery</strong> — pay when you receive the order</span>
+            </label>
+          </fieldset>
+
+          <p id="formError" class="error" role="alert"></p>
+          <button id="placeOrder" class="primary" type="submit">Place order</button>
+        </form>
+      </div>
+
+      <div id="statusView" hidden>
+        <div id="statusIcon" class="status-icon"></div>
+        <h3 id="statusTitle"></h3>
+        <p id="statusText"></p>
+        <dl id="orderSummary" class="summary"></dl>
+        <div id="retryBox" hidden>
+          <label>Phone number
+            <input id="retryPhone" type="tel" inputmode="tel" placeholder="0712 345 678">
+          </label>
+          <button id="retryButton" class="primary">Resend M-Pesa prompt</button>
+        </div>
+        <button id="continueButton" class="secondary" hidden>Continue shopping</button>
+      </div>
+    </div>
+  </aside>
+
+  <template id="productTemplate">
+    <article class="card">
+      <div class="thumb"></div>
+      <h3 class="name"></h3>
+      <p class="desc muted"></p>
+      <div class="card-foot">
+        <span class="price"></span>
+        <button class="primary add">Add to cart</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

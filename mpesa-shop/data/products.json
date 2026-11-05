@@ -1,0 +1,8 @@
+[
+  { "id": "p1", "name": "Kikoi Beach Wrap", "price": 1200, "image": "🧣", "description": "Hand-woven cotton kikoi in coastal stripes." },
+  { "id": "p2", "name": "Kenyan AA Coffee (500g)", "price": 950, "image": "☕", "description": "Single-origin beans from Nyeri, medium roast." },
+  { "id": "p3", "name": "Maasai Beaded Bracelet", "price": 450, "image": "📿", "description": "Handmade beadwork in traditional colours." },
+  { "id": "p4", "name": "Sisal Kiondo Basket", "price": 2300, "image": "🧺", "description": "Woven sisal basket with leather handles." },
+  { "id": "p5", "name": "Kenyan Tea (250g)", "price": 350, "image": "🍵", "description": "Strong black tea from Kericho highlands." },
+  { "id": "p6", "name": "Soapstone Carving", "price": 1800, "image": "🗿", "description": "Kisii soapstone sculpture, hand-polished." }
+]

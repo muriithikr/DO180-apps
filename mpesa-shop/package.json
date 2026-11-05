@@ -1,0 +1,17 @@
+{
+  "name": "mpesa-shop",
+  "version": "1.0.0",
+  "description": "Small e-commerce shop with M-Pesa (Daraja STK Push) and cash-on-delivery checkout",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "ASL",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
