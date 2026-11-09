@@ -49,6 +49,16 @@ test('loadConfig defaults to mock without credentials and validates live config'
     () => loadConfig({ MPESA_CONSUMER_KEY: 'k', MPESA_CONSUMER_SECRET: 's', MPESA_CALLBACK_URL: 'http://x' }),
     /https/,
   );
+  for (const bad of ['https://shop.example/api/mpesa/callback/t', 'https://shop.example/M-Pesa/cb', 'https://safaricom-pay.example/cb']) {
+    assert.throws(
+      () => loadConfig({ MPESA_CONSUMER_KEY: 'k', MPESA_CONSUMER_SECRET: 's', MPESA_CALLBACK_URL: bad }),
+      /must not contain "mpesa"/,
+    );
+  }
+  assert.equal(
+    loadConfig({ MPESA_CONSUMER_KEY: 'k', MPESA_CONSUMER_SECRET: 's', MPESA_CALLBACK_URL: 'https://shop.example/api/payments/callback/t' }).mode,
+    'sandbox',
+  );
 });
 
 test('parseStkCallback extracts metadata', () => {
@@ -75,7 +85,7 @@ test('stkPush sends a correct Daraja request', async () => {
   };
   const cfg = loadConfig({
     MPESA_ENV: 'sandbox', MPESA_CONSUMER_KEY: 'k', MPESA_CONSUMER_SECRET: 's',
-    MPESA_CALLBACK_URL: 'https://example.com/api/mpesa/callback/t',
+    MPESA_CALLBACK_URL: 'https://example.com/api/payments/callback/t',
   });
   const client = new MpesaClient(cfg, { fetchImpl });
   const r = await client.stkPush({ phone: '0712345678', amount: 150.4, reference: 'ORDABC', description: 'Order ABC' });
@@ -87,7 +97,7 @@ test('stkPush sends a correct Daraja request', async () => {
   assert.equal(body.Amount, 150);
   assert.equal(body.PartyA, '254712345678');
   assert.equal(body.BusinessShortCode, '174379');
-  assert.equal(body.CallBackURL, 'https://example.com/api/mpesa/callback/t');
+  assert.equal(body.CallBackURL, 'https://example.com/api/payments/callback/t');
   // Token is cached between calls.
   await client.stkPush({ phone: '0712345678', amount: 1 });
   assert.equal(calls.filter((c) => c.url.includes('oauth')).length, 1);
@@ -151,21 +161,21 @@ test('callback marks order paid, checks token and amount', async () => {
     const o1 = (await call('POST', '/api/orders', { items: [{ id: 'a', qty: 1 }], customer: { name: 'A', phone: '0712345678' }, paymentMethod: 'mpesa' })).body;
     const o2 = (await call('POST', '/api/orders', { items: [{ id: 'a', qty: 1 }], customer: { name: 'A', phone: '0712345678' }, paymentMethod: 'mpesa' })).body;
 
-    assert.equal((await call('POST', '/api/mpesa/callback/wrong', cb('C1', 150))).status, 403);
-    assert.equal((await call('POST', '/api/mpesa/callback', cb('C1', 150))).status, 403);
+    assert.equal((await call('POST', '/api/payments/callback/wrong', cb('C1', 150))).status, 403);
+    assert.equal((await call('POST', '/api/payments/callback', cb('C1', 150))).status, 403);
     assert.equal((await call('GET', `/api/orders/${o1.id}`)).body.status, 'pending_payment');
 
-    assert.equal((await call('POST', '/api/mpesa/callback/sekret', cb('C1', 150))).status, 200);
+    assert.equal((await call('POST', '/api/payments/callback/sekret', cb('C1', 150))).status, 200);
     let r = await call('GET', `/api/orders/${o1.id}`);
     assert.equal(r.body.status, 'paid');
     assert.equal(r.body.payment.receipt, 'QWE123');
 
     // Duplicate failure callback for an already-paid order is ignored.
-    await call('POST', '/api/mpesa/callback/sekret', cb('C1', 150, 1032));
+    await call('POST', '/api/payments/callback/sekret', cb('C1', 150, 1032));
     assert.equal((await call('GET', `/api/orders/${o1.id}`)).body.status, 'paid');
 
-    // Wrong amount is flagged for review instead of being marked paid.
-    await call('POST', '/api/mpesa/callback/sekret', cb('C2', 1));
+    // Wrong amount is flagged for review instead of being marked paid (sent to the legacy path).
+    assert.equal((await call('POST', '/api/mpesa/callback/sekret', cb('C2', 1))).status, 200);
     assert.equal((await call('GET', `/api/orders/${o2.id}`)).body.status, 'payment_review');
   });
 });

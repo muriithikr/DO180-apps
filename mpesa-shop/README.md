@@ -45,7 +45,7 @@ complete automatically after about 6 seconds. A phone number ending in `0000` (f
    export MPESA_CONSUMER_KEY=...
    export MPESA_CONSUMER_SECRET=...
    export MPESA_CALLBACK_TOKEN=$(openssl rand -hex 16)
-   export MPESA_CALLBACK_URL=https://<your-tunnel-host>/api/mpesa/callback/$MPESA_CALLBACK_TOKEN
+   export MPESA_CALLBACK_URL=https://<your-tunnel-host>/api/payments/callback/$MPESA_CALLBACK_TOKEN
    npm start
    ```
 
@@ -88,6 +88,6 @@ oc create route edge --service mpesa-shop        # HTTPS route = your callback h
 | POST | `/api/orders` | Create an order: `{ items:[{id,qty}], customer:{name,phone,address}, paymentMethod:"mpesa"\|"cod" }` |
 | GET | `/api/orders/:id` | Order status (the browser polls this) |
 | POST | `/api/orders/:id/pay` | Resend the STK prompt, optionally with `{ phone }` |
-| POST | `/api/mpesa/callback/:token` | Daraja STK callback |
+| POST | `/api/payments/callback/:token` | Daraja STK callback (the old `/api/mpesa/callback/:token` still works locally, but Daraja rejects URLs containing "mpesa") |
 | GET | `/api/admin/orders` | All orders; needs `Authorization: Bearer $ADMIN_TOKEN` |
 | GET | `/healthz` | Liveness check |

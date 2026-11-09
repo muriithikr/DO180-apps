@@ -151,8 +151,14 @@ function createApp({
   // ---- Safaricom callback -------------------------------------------------
   // Daraja does not sign callbacks, so: (1) put a secret token in the callback
   // URL, (2) only accept CheckoutRequestIDs we issued, (3) verify the amount.
+  // Daraja rejects callback URLs containing "mpesa"/"safaricom", so the route
+  // is /api/payments/callback. The old path is still accepted for existing setups.
 
-  app.post(['/api/mpesa/callback', '/api/mpesa/callback/:token'], (req, res) => {
+  const callbackPaths = [
+    '/api/payments/callback', '/api/payments/callback/:token',
+    '/api/mpesa/callback', '/api/mpesa/callback/:token',
+  ];
+  app.post(callbackPaths, (req, res) => {
     // Always answer 200 quickly so Safaricom doesn't retry endlessly.
     const ack = () => res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
 

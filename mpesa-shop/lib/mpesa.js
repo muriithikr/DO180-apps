@@ -50,6 +50,12 @@ function loadConfig(env = process.env) {
     if (!/^https:\/\//.test(cfg.callbackUrl)) {
       throw new Error('MPESA_CALLBACK_URL must be a public https:// URL reachable by Safaricom');
     }
+    if (/mpesa|m-pesa|safaricom/i.test(cfg.callbackUrl)) {
+      throw new Error(
+        'MPESA_CALLBACK_URL must not contain "mpesa" or "safaricom" (Daraja rejects such URLs); ' +
+        'use https://<host>/api/payments/callback/<token>',
+      );
+    }
   }
   return cfg;
 }
